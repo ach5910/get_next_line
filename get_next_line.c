@@ -6,14 +6,11 @@
 /*   By: ahunt <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/11 15:46:42 by ahunt             #+#    #+#             */
-/*   Updated: 2016/10/31 12:04:58 by ahunt            ###   ########.fr       */
+/*   Updated: 2016/12/01 09:37:08 by ahunt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include "stdlib.h"
-#include "stdio.h"
-
 
 static int	read_memory(char **mem, char **line, int endl)
 {
@@ -80,24 +77,5 @@ int			get_next_line(const int fd, char **line)
 		return (-1);
 	if (mem && *mem && read_memory(&mem, line, 1))
 		return (1);
-	return (0);
-}
-
-int	main(void)
-{
-	char *line;
-	int	ret;
-	int fd;
-
-	if ((fd = open("test.text", O_RDONLY, 06000)) == -1)
-		return (0);
-	ret = get_next_line(fd, &line);
-	ft_putstr("Return: ");
-	ft_putnbr(ret);
-	ft_putstr("   Line: ");
-	if (line == NULL || *line == '\0')
-		ft_putendl("NULL");
-	else
-		ft_putendl(line);
 	return (0);
 }
