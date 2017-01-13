@@ -6,7 +6,7 @@
 /*   By: ahunt <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/11 15:46:42 by ahunt             #+#    #+#             */
-/*   Updated: 2016/12/01 09:37:08 by ahunt            ###   ########.fr       */
+/*   Updated: 2016/12/07 19:09:10 by ahunt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,17 @@
 static int	read_memory(char **mem, char **line, int endl)
 {
 	char	*nl_ptr;
+	char	*temp;
 
-	if ((nl_ptr = ft_strchr(*mem, '\n')))
+	if (!endl)
+		temp = ft_strdup(*mem);
+	if (!endl && (nl_ptr = ft_strchr(temp, '\n')))
 	{
 		*nl_ptr = '\0';
-		*line = ft_strdup(*mem);
-		free(*mem);
-		*mem = ft_strdup(nl_ptr + 1);
+		*line = ft_strdup(temp);
+		ft_strdel(mem);
+		*mem = ft_strdup((const char*)(nl_ptr + 1));
+		ft_strdel(&temp);
 		return (1);
 	}
 	else if (endl)
@@ -33,22 +37,22 @@ static int	read_memory(char **mem, char **line, int endl)
 	return (0);
 }
 
-static int	parse_newline(char **mem, char *buffer, char **line)
+static int	parse_newline(char **mem, char **buffer, char **line)
 {
 	char	*nl_ptr;
 
-	if ((nl_ptr = ft_strchr(buffer, '\n')))
+	if ((nl_ptr = ft_strchr(*buffer, '\n')))
 	{
 		*nl_ptr = '\0';
 		if (*mem)
 		{
-			*line = ft_strjoin(*mem, buffer);
-			free(*mem);
+			*line = ft_strjoin(*mem, *buffer);
+			ft_strdel(mem);
 		}
 		else
-			*line = ft_strdup(buffer);
+			*line = ft_strdup(*buffer);
 		*mem = ft_strdup(nl_ptr + 1);
-		free(buffer);
+		ft_strdel(buffer);
 		return (1);
 	}
 	return (0);
@@ -68,11 +72,11 @@ int			get_next_line(const int fd, char **line)
 	while ((size_read = read(fd, buffer, BUFF_SIZE)) > 0)
 	{
 		buffer[size_read] = '\0';
-		if (parse_newline(&mem, buffer, line))
+		if (parse_newline(&mem, &buffer, line))
 			return (1);
 		mem = mem != NULL ? ft_strjoin(mem, buffer) : ft_strdup(buffer);
 	}
-	free(buffer);
+	ft_strdel(&buffer);
 	if (size_read == -1)
 		return (-1);
 	if (mem && *mem && read_memory(&mem, line, 1))
